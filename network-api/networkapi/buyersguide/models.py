@@ -1,5 +1,6 @@
 from django.db import models
 from networkapi.utility.images import get_image_upload_path
+from django.core.validators import MaxValueValidator, MinValueValidator
 # from wagtail.snippets.models import register_snippet
 
 
@@ -88,3 +89,23 @@ class Product(models.Model):
 
     def __str__(self):
         return str(self.name)
+
+
+class Vote(models.Model):
+
+    rating = models.IntegerField(
+        default=0,
+        null=False,
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(99)
+        ]
+    )
+
+    attribute = models.CharField(
+        null=False,
+        max_length=50
+    )
+
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+
