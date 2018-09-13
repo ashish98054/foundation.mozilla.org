@@ -92,20 +92,18 @@ class Product(models.Model):
 
 
 class Vote(models.Model):
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
 
-    rating = models.IntegerField(
-        default=0,
+
+class RangeVote(Vote):
+    value = models.IntegerField(
         null=False,
         validators=[
-            MinValueValidator(0),
-            MaxValueValidator(99)
+            MinValueValidator(1),
+            MaxValueValidator(100)
         ]
     )
 
-    attribute = models.CharField(
-        null=False,
-        max_length=50
-    )
 
-    product = models.ForeignKey('Product', on_delete=models.CASCADE)
-
+class BooleanVote(Vote):
+    value = models.BooleanField(null=False)
