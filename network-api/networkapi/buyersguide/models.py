@@ -1,7 +1,15 @@
 from django.db import models
-from networkapi.utility.images import get_image_upload_path
 from django.core.validators import MaxValueValidator, MinValueValidator
-# from wagtail.snippets.models import register_snippet
+from django.core.exceptions import ValidationError
+
+from networkapi.buyersguide.validators import VoteAttributeValidator
+from networkapi.utility.images import get_image_upload_path
+
+VALID_VOTE_ATTRIBUTES = [
+    'creepiness',
+    'confidence'
+]
+
 
 
 def get_product_image_upload_path(instance, filename):
@@ -94,8 +102,25 @@ class Product(models.Model):
 class Vote(models.Model):
     product = models.ForeignKey('Product', on_delete=models.CASCADE)
 
+class BooleanVote(Vote):
+    attribute = models.CharField(
+        max_length=100,
+        null=False,
+        validators=[
+            VoteAttributeValidator(valid_attributes=['confidence'])
+        ]
+    )
+    value = models.BooleanField(null=False)
+
 
 class RangeVote(Vote):
+    attribute = models.CharField(
+        max_length=100,
+        null=False,
+        validators=[
+            VoteAttributeValidator(valid_attributes=['creepiness'])
+        ]
+    )
     value = models.IntegerField(
         null=False,
         validators=[
@@ -105,5 +130,5 @@ class RangeVote(Vote):
     )
 
 
-class BooleanVote(Vote):
-    value = models.BooleanField(null=False)
+
+

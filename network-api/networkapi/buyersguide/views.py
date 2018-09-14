@@ -36,6 +36,7 @@ def product_view(request, productname):
 @csrf_protect
 def product_vote(request):
     # Grab the request payload data
+    attribute = request.data['attribute']
     product_id = request.data['productID']
     value = request.data['value']
 
@@ -53,6 +54,7 @@ def product_vote(request):
 
         # Build the model instance
         vote = vote_class(
+            attribute=attribute,
             value=value,
             product=product
         )

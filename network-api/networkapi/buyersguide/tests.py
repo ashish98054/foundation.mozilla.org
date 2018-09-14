@@ -17,7 +17,9 @@ class BuyersGuideVoteTest(APITestCase):
 
         test_product_id = ProductFactory.create().id
         vote_value = 50
+
         response = self.client.post(self.vote_url, {
+            'attribute': 'creepiness',
             'value': vote_value,
             'productID': test_product_id
         }, format='json')
@@ -35,7 +37,9 @@ class BuyersGuideVoteTest(APITestCase):
         """
         test_product_id = ProductFactory.create().id
         vote_value = True
+
         response = self.client.post(self.vote_url, {
+            'attribute': 'confidence',
             'value': vote_value,
             'productID': test_product_id
         }, format='json')
@@ -50,10 +54,11 @@ class BuyersGuideVoteTest(APITestCase):
         Value can't be anything other than a Boolean or int
         """
         test_product_id = ProductFactory.create().id
-
         # String values not allowed
         vote_value = 'invalid'
+
         response = self.client.post(self.vote_url, {
+            'attribute': 'confidence',
             'value': vote_value,
             'productID': test_product_id
         }, format='json')
@@ -63,6 +68,7 @@ class BuyersGuideVoteTest(APITestCase):
         # Floating point numbers not allowed
         vote_value = 14.5
         response = self.client.post(self.vote_url, {
+            'attribute': 'creepiness',
             'value': vote_value,
             'productID': test_product_id
         }, format='json')
@@ -70,8 +76,8 @@ class BuyersGuideVoteTest(APITestCase):
         self.assertEqual(response.status_code, 400)
 
         # undefined values not allowed
-        vote_value = 14.5
         response = self.client.post(self.vote_url, {
+            'attribute': 'creepiness',
             'value': None,
             'productID': test_product_id
         }, format='json')
@@ -83,9 +89,10 @@ class BuyersGuideVoteTest(APITestCase):
         productID must be an int, and must exist in the database
         """
         test_product_id = '1'
-
         vote_value = 50
+
         response = self.client.post(self.vote_url, {
+            'attribute': 'creepiness',
             'value': vote_value,
             'productID': test_product_id
         }, format='json')
@@ -95,8 +102,8 @@ class BuyersGuideVoteTest(APITestCase):
         # Test an id that won't exist
         test_product_id = 100000000
 
-        vote_value = 50
         response = self.client.post(self.vote_url, {
+            'attribute': 'creepiness',
             'value': vote_value,
             'productID': test_product_id
         }, format='json')
@@ -108,9 +115,10 @@ class BuyersGuideVoteTest(APITestCase):
         If value is an int, it must be between 1 and 100
         """
         test_product_id = ProductFactory.create().id
-
         vote_value = 0
+
         response = self.client.post(self.vote_url, {
+            'attribute': 'creepiness',
             'value': vote_value,
             'productID': test_product_id
         }, format='json')
@@ -118,9 +126,60 @@ class BuyersGuideVoteTest(APITestCase):
         self.assertEqual(response.status_code, 400)
 
         test_product_id = ProductFactory.create().id
-
         vote_value = 101
+
         response = self.client.post(self.vote_url, {
+            'attribute': 'creepiness',
+            'value': vote_value,
+            'productID': test_product_id
+        }, format='json')
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_invalid_attribute_with_int(self):
+        """
+        Test that attribute can only be 'creepiness' when value is an int
+        """
+        test_product_id = ProductFactory.create().id
+        vote_value = 50
+
+        response = self.client.post(self.vote_url, {
+            'attribute': 'creepiness',
+            'value': vote_value,
+            'productID': test_product_id
+        }, format='json')
+
+        self.assertEqual(response.status_code, 201)
+
+        test_product_id = ProductFactory.create().id
+
+        response = self.client.post(self.vote_url, {
+            'attribute': 'confidence',
+            'value': vote_value,
+            'productID': test_product_id
+        }, format='json')
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_invalid_attribute_with_boolean(self):
+        """
+        Test that attribute can only be 'confidence' when value is a boolean
+        """
+        test_product_id = ProductFactory.create().id
+        vote_value = True
+
+        response = self.client.post(self.vote_url, {
+            'attribute': 'confidence',
+            'value': vote_value,
+            'productID': test_product_id
+        }, format='json')
+
+        self.assertEqual(response.status_code, 201)
+
+        test_product_id = ProductFactory.create().id
+
+        response = self.client.post(self.vote_url, {
+            'attribute': 'creepiness',
             'value': vote_value,
             'productID': test_product_id
         }, format='json')
